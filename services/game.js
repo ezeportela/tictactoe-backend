@@ -1,5 +1,7 @@
 const MongoLib = require('../lib/mongo')
 
+const { checksNullArray } = require('../utils')
+
 class GameService {
     constructor() {
         this.collection = 'games'
@@ -13,7 +15,7 @@ class GameService {
 
     async getGame({ gameId }) {
         const game = await this.mongoDB.get(this.collection, gameId)
-        return game || []
+        return game || {}
     }
 
     async createGame() {
@@ -23,6 +25,21 @@ class GameService {
         })
 
         return createScriptId
+    }
+
+    async playerMoves(gameId, { row, column, player }) {
+        const game = await this.getGame({ gameId })
+        
+        game.moves = checksNullArray ? [] : game.moves
+        game.moves.push({
+            row,
+            column,
+            player
+        })
+
+        const updatedGame = await this.mongoDB.update(this.collection, gameId, game)
+
+        return game
     }
 }
 

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "nodemon ./bin/www",
-    "dev:unix": "DEBUG=tictactoe-backend:* npm start",
+    "dev:unix": "DEBUG=tictactoe-backend:* npm run dev",
     "start": "node ./bin/www"
   },
   "dependencies": {

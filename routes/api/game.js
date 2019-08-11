@@ -47,6 +47,22 @@ const gameApi = app => {
 	    } catch(err) {
 	        next(err)
 	    }
+    })
+    
+    router.post('/:gameId', async (req, res, next) => {
+	    const { gameId } = req.params
+        const { body: game } = req
+
+	    try {
+	        const updatedGame = await gameService.playerMoves(gameId, game)
+
+	        res.status(200).json({
+	            data: updatedGame,
+	            message: 'game updated'
+	        })
+	    } catch(err) {
+	        next(err)
+	    }
 	})
 }
 
