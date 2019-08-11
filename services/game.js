@@ -7,8 +7,8 @@ class GameService {
     }
 
     async getGames() {
-        const games = await this.mongoDB.getAll(this.collection, query)
-        return Promise.resolve(scripts || [])
+        const games = await this.mongoDB.getAll(this.collection, {})
+        return Promise.resolve(games || [])
     }
 
     async getGame({ gameId }) {

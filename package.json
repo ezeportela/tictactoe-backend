@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "DEBUG=tictactoe-backend:* npm start",
+    "dev": "nodemon ./bin/www",
+    "dev:unix": "DEBUG=tictactoe-backend:* npm start",
     "start": "node ./bin/www"
   },
   "dependencies": {
@@ -13,5 +14,8 @@
     "express": "~4.16.1",
     "mongodb": "^3.3.0-beta2",
     "morgan": "~1.9.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
   }
 }
