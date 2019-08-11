@@ -1,6 +1,46 @@
 const MongoLib = require('../lib/mongo')
 
-const { checksNullArray } = require('../utils')
+const { 
+    checksNullArray,
+    minValueOfArray,
+    maxValueOfArray 
+} = require('../utils')
+
+const checkGame = (moves, total, attr, player) => {
+    let result = false
+    for(let i = 0; i < total; i++) {
+        const index = i + 1
+        
+        const arr = moves.filter(item => item[attr] == index)
+        result = arr.length === total && arr.every(item => item.player == player)
+
+        if(result) return result
+    }
+    return result
+}
+
+const finishGame = game => {
+    const { moves } = game
+
+    for(let j = 0; j < maxValueOfArray(moves, 'player'); j++) {
+        const player = j + 1
+
+        for(let attr of [{ value: 'row', total: game.rows }, { value: 'column', total: game.columns }]) {
+            const result = checkGame(game.moves, attr.total, attr.value, player)
+
+            if(result) {
+                return {
+                    finished: true,
+                    winner: player
+                }
+            }
+        }
+    }
+
+    return {
+        finished: false,
+    }
+}
 
 class GameService {
     constructor() {
@@ -19,27 +59,37 @@ class GameService {
     }
 
     async createGame() {
-        const createScriptId = await this.mongoDB.create(this.collection, {
+        const createGameId = await this.mongoDB.create(this.collection, {
             createdAt: Date.now(),
-            finished: false
+            finished: false,
+            rows: 3,
+            columns: 3,
         })
 
-        return createScriptId
+        return createGameId
     }
 
     async playerMoves(gameId, { row, column, player }) {
         const game = await this.getGame({ gameId })
         
-        game.moves = checksNullArray ? [] : game.moves
+        game.moves = game.moves != null ? game.moves : []
         game.moves.push({
             row,
             column,
-            player
+            player,
+            createdAt: Date.now(),
         })
 
-        const updatedGame = await this.mongoDB.update(this.collection, gameId, game)
+        const result = finishGame(game)
 
-        return game
+        const updatedGame = {
+            ...game,
+            ...result
+        }
+
+        await this.mongoDB.update(this.collection, gameId, updatedGame)
+
+        return updatedGame
     }
 }
 
