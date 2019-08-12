@@ -7,5 +7,5 @@ const maxValueOfArray = (arr, attr) => Math.max.apply(Math, arr.map(item => item
 module.exports = {
     checksNullArray,
     minValueOfArray,
-    maxValueOfArray
+    maxValueOfArray,
 }
