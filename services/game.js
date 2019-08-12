@@ -24,40 +24,56 @@ class GameService {
     }
 
     async createGame() {
-        const createGameId = await this.mongoDB.create(this.collection, {
+        const createdGame = await this.mongoDB.create(this.collection, {
             createdAt: Date.now(),
             finished: false,
             rows: 3,
             columns: 3,
         })
 
-        return createGameId
+        return createdGame
     }
 
     async playerMoves(gameId, { row, column, player }) {
+        const computerPlayer = 2
         const game = await this.getGame({ gameId })
         
-        game.moves = game.moves != null ? game.moves : []
+        if(!game.finished) {
+            game.moves = game.moves != null ? game.moves : []
 
-        game.moves.push({
-            row,
-            column,
-            player,
-            createdAt: Date.now(),
-        })
+            game.moves.push({
+                row,
+                column,
+                player,
+                createdAt: Date.now(),
+            })
 
-        const result = finishGame(game)
+            let result = finishGame(game)
 
-        computerMoves(game)
+            if(!result.finished) {
+                const computerMove = computerMoves(game)
 
-        const updatedGame = {
-            ...game,
-            ...result
+                game.moves.push({
+                    row: computerMove.row,
+                    column: computerMove.column,
+                    player: computerPlayer,
+                    createdAt: Date.now(),
+                })
+
+                result = finishGame(game)
+            }
+
+            const updatedGame = {
+                ...game,
+                ...result
+            }
+
+            await this.mongoDB.update(this.collection, gameId, updatedGame)
+
+            return updatedGame
         }
 
-        await this.mongoDB.update(this.collection, gameId, updatedGame)
-
-        return updatedGame
+        return game
     }
 }
 

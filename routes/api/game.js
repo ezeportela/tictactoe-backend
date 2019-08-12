@@ -38,10 +38,10 @@ const gameApi = app => {
 
 	router.post('/', async (req, res, next) => {
 	    try {
-	        const createdGameId = await gameService.createGame()
+	        const createdGame = await gameService.createGame()
 
 	        res.status(201).json({
-	            data: createdGameId,
+	            data: createdGame,
 	            message: 'game created'
 	        })
 	    } catch(err) {
