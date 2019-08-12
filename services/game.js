@@ -1,7 +1,8 @@
 const MongoLib = require('../lib/mongo')
 
 const { 
-    finishGame
+    finishGame,
+    computerMoves
 } = require('../lib/game')
 
 
@@ -46,6 +47,8 @@ class GameService {
         })
 
         const result = finishGame(game)
+
+        computerMoves(game)
 
         const updatedGame = {
             ...game,
